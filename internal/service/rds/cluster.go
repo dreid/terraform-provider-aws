@@ -387,6 +387,11 @@ func resourceCluster() *schema.Resource {
 				},
 				ValidateFunc: verify.ValidOnceAWeekWindowFormat,
 			},
+			names.AttrPubliclyAccessible: {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"reader_endpoint": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -657,6 +662,7 @@ func resourceClusterCreate(ctx context.Context, d *schema.ResourceData, meta int
 			Engine:              aws.String(d.Get(names.AttrEngine).(string)),
 			EngineMode:          aws.String(d.Get("engine_mode").(string)),
 			SnapshotIdentifier:  aws.String(v.(string)),
+			PubliclyAccessible:  aws.Bool(d.Get(names.AttrPubliclyAccessible).(bool)),
 			Tags:                getTagsIn(ctx),
 		}
 
@@ -1035,6 +1041,7 @@ func resourceClusterCreate(ctx context.Context, d *schema.ResourceData, meta int
 			DeletionProtection:  aws.Bool(d.Get(names.AttrDeletionProtection).(bool)),
 			Engine:              aws.String(d.Get(names.AttrEngine).(string)),
 			EngineMode:          aws.String(d.Get("engine_mode").(string)),
+			PubliclyAccessible:  aws.Bool(d.Get(names.AttrPubliclyAccessible).(bool)),
 			Tags:                getTagsIn(ctx),
 		}
 
@@ -1337,6 +1344,7 @@ func resourceClusterRead(ctx context.Context, d *schema.ResourceData, meta inter
 	d.Set(names.AttrPort, dbc.Port)
 	d.Set("preferred_backup_window", dbc.PreferredBackupWindow)
 	d.Set(names.AttrPreferredMaintenanceWindow, dbc.PreferredMaintenanceWindow)
+	d.Set(names.AttrPubliclyAccessible, dbc.PubliclyAccessible)
 	d.Set("reader_endpoint", dbc.ReaderEndpoint)
 	d.Set("replication_source_identifier", dbc.ReplicationSourceIdentifier)
 	if dbc.ScalingConfigurationInfo != nil {
